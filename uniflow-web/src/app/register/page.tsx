@@ -13,6 +13,8 @@ import {
   CheckCircle2
 } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 const COUNTRIES = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'United Kingdom', 'United States', 'Canada', 'Other']
 
 const NIGERIAN_STATES = [

@@ -1,20 +1,29 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import UniflowLogo from '@/components/ui/UniflowLogo'
-import { MenuIcon } from '@/components/ui/Menu'
+import { MenuIcon, MenuIconHandle } from '@/components/ui/Menu'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const menuIconRef = useRef<MenuIconHandle>(null)
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      menuIconRef.current?.startAnimation()
+    } else {
+      menuIconRef.current?.stopAnimation()
+    }
+  }, [mobileMenuOpen])
 
   const navLinks = [
     { name: 'Problem', href: '#problem' },
@@ -121,7 +130,7 @@ export default function Navbar() {
             className="mobile-menu-btn md:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <MenuIcon /> : <MenuIcon />}
+            <MenuIcon ref={menuIconRef} />
           </button>
         </div>
       </motion.div>

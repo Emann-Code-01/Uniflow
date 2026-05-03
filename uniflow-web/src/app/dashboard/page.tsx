@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import { Building2, Clock, CheckCircle2, XCircle } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
 interface Stats {
   pending: number
   approved: number
