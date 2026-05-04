@@ -9,6 +9,22 @@ import {
 const publicRoutes = ["/", "/register", "/login"];
 const authRoutes = ["/login", "/register"];
 
+function rewriteWithCookies(
+  request: NextRequest,
+  response: NextResponse,
+  pathname: string,
+) {
+  const url = request.nextUrl.clone();
+  url.pathname = pathname;
+
+  const rewriteResponse = NextResponse.rewrite(url, { request });
+  response.cookies.getAll().forEach((cookie) => {
+    rewriteResponse.cookies.set(cookie);
+  });
+
+  return rewriteResponse;
+}
+
 export async function proxy(request: NextRequest) {
   const hostname = request.headers.get("host") || "";
   const { pathname } = request.nextUrl;
@@ -41,16 +57,14 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // ── on localhost — normal routing ──
+  // Bare localhost or the primary app host uses normal top-level routing.
   if (!subdomain) {
-    // if logged in and trying to visit auth routes — redirect to dashboard
     if (user && authRoutes.includes(pathname)) {
       const url = request.nextUrl.clone();
       url.pathname = "/dashboard";
       return NextResponse.redirect(url);
     }
 
-    // if not logged in and trying to visit protected routes
     if (!user && !publicRoutes.includes(pathname)) {
       const url = request.nextUrl.clone();
       url.pathname = "/login";
@@ -60,7 +74,6 @@ export async function proxy(request: NextRequest) {
     return supabaseResponse;
   }
 
-  // ── super admin portal (admin.uniflow.com.ng) ──
   if (isSuperAdmin(hostname)) {
     if (!user) {
       const url = request.nextUrl.clone();
@@ -68,7 +81,6 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // check if user is uniflow_admin
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
@@ -84,17 +96,29 @@ export async function proxy(request: NextRequest) {
     return supabaseResponse;
   }
 
-  // ── university portal (aaua-admin.uniflow.com.ng) ──
   if (isUniversityPortal(hostname)) {
-    if (pathname === "/login") return supabaseResponse;
+    if (pathname === "/u" || pathname.startsWith("/u/")) {
+      const url = request.nextUrl.clone();
+      url.pathname = pathname === "/u" ? "/" : pathname.replace(/^\/u/, "");
+      return NextResponse.redirect(url);
+    }
 
     if (!user) {
+      if (pathname === "/login") {
+        return rewriteWithCookies(request, supabaseResponse, "/u/login");
+      }
+
       const url = request.nextUrl.clone();
       url.pathname = "/login";
       return NextResponse.redirect(url);
     }
 
-    // check user belongs to this university and has correct role
+    if (pathname === "/login") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      return NextResponse.redirect(url);
+    }
+
     const { data: profile } = await supabase
       .from("profiles")
       .select("role, university_id, universities(short_name)")
@@ -108,7 +132,8 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    return supabaseResponse;
+    const internalPath = pathname === "/" ? "/u" : `/u${pathname}`;
+    return rewriteWithCookies(request, supabaseResponse, internalPath);
   }
 
   return supabaseResponse;

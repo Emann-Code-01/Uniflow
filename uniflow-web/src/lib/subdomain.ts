@@ -1,26 +1,51 @@
+function extractPortalKey(host: string): string | null {
+  if (host === "admin") return "super";
+  if (host.endsWith("-admin")) return host.slice(0, -"-admin".length);
+  return null;
+}
+
 export function getSubdomain(hostname: string): string | null {
-  // localhost:3000 → no subdomain
-  // aaua-admin.uniflow.com.ng → 'aaua'
-  // admin.uniflow.com.ng → 'admin' (super admin)
+  // localhost:3000 -> no subdomain
+  // aaua-admin.localhost:3000 -> "aaua"
+  // aaua-admin.lvh.me:3000 -> "aaua"
+  // aaua-admin.uniflow.com.ng -> "aaua"
+  // admin.uniflow.com.ng -> "super"
 
-  const isLocal = hostname.includes('localhost') || hostname.includes('127.0.0.1')
-  if (isLocal) return null
+  const host = hostname.split(":")[0].toLowerCase();
+  if (!host) return null;
 
-  const parts = hostname.split('.')
-  // aaua-admin.uniflow.com.ng has 4 parts
-  if (parts.length < 4) return null
+  if (host === "localhost" || host === "127.0.0.1") return null;
 
-  const sub = parts[0] // e.g. 'aaua-admin'
-  if (sub === 'admin') return 'super' // super admin portal
-  if (sub.endsWith('-admin')) return sub.replace('-admin', '') // university short name
-  return null
+  if (host.endsWith(".localhost")) {
+    return extractPortalKey(host.replace(/\.localhost$/, ""));
+  }
+
+  if (host.endsWith(".lvh.me")) {
+    return extractPortalKey(host.replace(/\.lvh\.me$/, ""));
+  }
+
+  if (
+    host.endsWith(".127.0.0.1.nip.io") ||
+    host.endsWith(".127.0.0.1.sslip.io")
+  ) {
+    return extractPortalKey(
+      host
+        .replace(/\.127\.0\.0\.1\.nip\.io$/, "")
+        .replace(/\.127\.0\.0\.1\.sslip\.io$/, ""),
+    );
+  }
+
+  const parts = host.split(".");
+  if (parts.length < 3) return null;
+
+  return extractPortalKey(parts[0]);
 }
 
 export function isUniversityPortal(hostname: string): boolean {
-  const sub = getSubdomain(hostname)
-  return sub !== null && sub !== 'super'
+  const sub = getSubdomain(hostname);
+  return sub !== null && sub !== "super";
 }
 
 export function isSuperAdmin(hostname: string): boolean {
-  return getSubdomain(hostname) === 'super'
+  return getSubdomain(hostname) === "super";
 }
