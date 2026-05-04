@@ -69,7 +69,14 @@ export default function UniversityPortalLayout({ children }: { children: React.R
   useEffect(() => {
     async function loadSession() {
       const { data: { session } } = await supabase.auth.getSession()
-      if (!session) { router.push('/login'); return }
+      if (!session) {
+        if (pathname !== '/login') {
+          router.push('/login')
+        } else {
+          setLoading(false)
+        }
+        return
+      }
 
       const { data: profile } = await supabase
         .from('profiles')
@@ -79,7 +86,11 @@ export default function UniversityPortalLayout({ children }: { children: React.R
 
       if (!profile || !['university_admin', 'dean', 'hod'].includes(profile.role)) {
         await supabase.auth.signOut()
-        router.push('/login')
+        if (pathname !== '/login') {
+          router.push('/login')
+        } else {
+          setLoading(false)
+        }
         return
       }
 
@@ -94,7 +105,7 @@ export default function UniversityPortalLayout({ children }: { children: React.R
       setLoading(false)
     }
     loadSession()
-  }, [])
+  }, [pathname, router])
 
   async function handleSignOut() {
     await supabase.auth.signOut()
@@ -109,6 +120,9 @@ export default function UniversityPortalLayout({ children }: { children: React.R
       </div>
     </div>
   )
+
+  // Skip sidebar/topbar for login page
+  if (pathname === '/login') return <>{children}</>
 
   const navItems = NAV_ITEMS[user!.role] ?? []
 
