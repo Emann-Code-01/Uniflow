@@ -140,11 +140,13 @@ export default function UniversityLoginPage() {
 
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-            <UniflowLogo size={36} />
-            <span style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '20px', color: 'var(--text-primary)' }}>
-              Uniflow
-            </span>
+          <div className="mb-10! text-center">
+            <h1 className="text-4xl font-black tracking-tighter text-primary">
+              uni<span className="text-brand">flow</span>
+            </h1>
+            <p className="mt-2! text-xs text-muted tracking-widest uppercase">
+              Admin Portal
+            </p>
           </div>
 
           {university ? (
