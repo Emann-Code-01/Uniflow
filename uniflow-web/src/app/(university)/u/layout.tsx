@@ -28,24 +28,24 @@ type Role = 'university_admin' | 'dean' | 'hod'
 
 const NAV_ITEMS: Record<Role, { label: string; href: string; icon: React.ElementType }[]> = {
   university_admin: [
-    { label: 'Overview', href: '/', icon: LayoutDashboard },
-    { label: 'Faculties', href: '/faculties', icon: BookOpen },
-    { label: 'Departments', href: '/departments', icon: Building2 },
-    { label: 'Lecturers', href: '/lecturers', icon: Users },
-    { label: 'Timetable', href: '/timetable', icon: CalendarDays },
-    { label: 'Settings', href: '/settings', icon: Settings },
+    { label: 'Overview', href: '/u', icon: LayoutDashboard },
+    { label: 'Faculties', href: '/u/faculties', icon: BookOpen },
+    { label: 'Departments', href: '/u/departments', icon: Building2 },
+    { label: 'Lecturers', href: '/u/lecturers', icon: Users },
+    { label: 'Timetable', href: '/u/timetable', icon: CalendarDays },
+    { label: 'Settings', href: '/u/settings', icon: Settings },
   ],
   dean: [
-    { label: 'Overview', href: '/', icon: LayoutDashboard },
-    { label: 'Departments', href: '/departments', icon: Building2 },
-    { label: 'Lecturers', href: '/lecturers', icon: Users },
-    { label: 'Settings', href: '/settings', icon: Settings },
+    { label: 'Overview', href: '/u', icon: LayoutDashboard },
+    { label: 'Departments', href: '/u/departments', icon: Building2 },
+    { label: 'Lecturers', href: '/u/lecturers', icon: Users },
+    { label: 'Settings', href: '/u/settings', icon: Settings },
   ],
   hod: [
-    { label: 'Overview', href: '/', icon: LayoutDashboard },
-    { label: 'Lecturers', href: '/lecturers', icon: Users },
-    { label: 'Timetable', href: '/timetable', icon: CalendarDays },
-    { label: 'Settings', href: '/settings', icon: Settings },
+    { label: 'Overview', href: '/u', icon: LayoutDashboard },
+    { label: 'Lecturers', href: '/u/lecturers', icon: Users },
+    { label: 'Timetable', href: '/u/timetable', icon: CalendarDays },
+    { label: 'Settings', href: '/u/settings', icon: Settings },
   ],
 }
 

@@ -48,10 +48,64 @@ export default function RegistrationsPage() {
 
   const handleApprove = async (id: string) => {
     setActionLoading(true)
+
+    // get the registration details
+    const reg = registrations.find(r => r.id === id)
+    if (!reg) { setActionLoading(false); return }
+
+    // 1. create auth user with a random temp password
+    const tempPassword = Math.random().toString(36).slice(-12) + 'A1!'
+    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+      email: reg.official_email,
+      password: tempPassword,
+      email_confirm: true,
+    })
+
+    if (authError) {
+      alert('Error creating user: ' + authError.message)
+      setActionLoading(false)
+      return
+    }
+
+    // 2. create university record
+    const { data: uniData, error: uniError } = await supabase
+      .from('universities')
+      .insert({
+        name: reg.university_name,
+        short_name: reg.short_name,
+        country: reg.country,
+        state: reg.state,
+        is_active: true,
+      })
+      .select()
+      .single()
+
+    if (uniError) {
+      alert('Error creating university: ' + uniError.message)
+      setActionLoading(false)
+      return
+    }
+
+    // 3. create their profile
+    await supabase.from('profiles').insert({
+      id: authData.user.id,
+      university_id: uniData.id,
+      full_name: reg.contact_person_name,
+      email: reg.official_email,
+      role: 'university_admin',
+    })
+
+    // 4. send password reset email so they can set their own password
+    await supabase.auth.resetPasswordForEmail(reg.official_email, {
+      redirectTo: `https://${reg.short_name}-admin.uniflow.com.ng/u/login`,
+    })
+
+    // 5. update registration status
     await supabase
       .from('university_registrations')
       .update({ status: 'approved', reviewed_at: new Date().toISOString() })
       .eq('id', id)
+
     await fetchRegistrations()
     setActionLoading(false)
   }

@@ -230,10 +230,10 @@ export default function UniversityOverviewPage() {
   }
 
   const STAT_CARDS = [
-    { icon: BookOpen, label: 'Faculties', value: stats.faculties, color: '#2563eb', href: '/faculties', sub: 'active faculties' },
-    { icon: Building2, label: 'Departments', value: stats.departments, color: '#8b5cf6', href: '/departments', sub: 'across all faculties' },
-    { icon: Users, label: 'Lecturers', value: stats.lecturers, color: '#fbbf24', href: '/lecturers', sub: 'onboarded lecturers' },
-    { icon: CalendarDays, label: 'Timetable Slots', value: stats.timetableSlots, color: '#22c55e', href: '/timetable', sub: 'scheduled classes' },
+    { icon: BookOpen, label: 'Faculties', value: stats.faculties, color: '#2563eb', href: '/u/faculties', sub: 'active faculties' },
+    { icon: Building2, label: 'Departments', value: stats.departments, color: '#8b5cf6', href: '/u/departments', sub: 'across all faculties' },
+    { icon: Users, label: 'Lecturers', value: stats.lecturers, color: '#fbbf24', href: '/u/lecturers', sub: 'onboarded lecturers' },
+    { icon: CalendarDays, label: 'Timetable Slots', value: stats.timetableSlots, color: '#22c55e', href: '/u/timetable', sub: 'scheduled classes' },
   ]
 
   // Role-filtered stat cards
@@ -272,7 +272,7 @@ export default function UniversityOverviewPage() {
       </div>
 
       {/* Two-column lower */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '20px', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '20px', alignItems: 'start' }}>
 
         {/* Recent Activity */}
         <div style={{
@@ -320,21 +320,21 @@ export default function UniversityOverviewPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {role === 'university_admin' && (
               <>
-                <QuickAction href="/faculties" icon={BookOpen} label="Add New Faculty" color="#2563eb" />
-                <QuickAction href="/departments" icon={Building2} label="Add Department" color="#8b5cf6" />
-                <QuickAction href="/lecturers" icon={Users} label="Onboard Lecturers" color="#fbbf24" />
+                <QuickAction href="/u/faculties" icon={BookOpen} label="Add New Faculty" color="#2563eb" />
+                <QuickAction href="/u/departments" icon={Building2} label="Add Department" color="#8b5cf6" />
+                <QuickAction href="/u/lecturers" icon={Users} label="Onboard Lecturers" color="#fbbf24" />
               </>
             )}
             {role === 'dean' && (
               <>
-                <QuickAction href="/departments" icon={Building2} label="Create Department" color="#8b5cf6" />
-                <QuickAction href="/lecturers" icon={Users} label="View Lecturers" color="#fbbf24" />
+                <QuickAction href="/u/departments" icon={Building2} label="Create Department" color="#8b5cf6" />
+                <QuickAction href="/u/lecturers" icon={Users} label="View Lecturers" color="#fbbf24" />
               </>
             )}
             {role === 'hod' && (
               <>
-                <QuickAction href="/lecturers" icon={Users} label="Upload Lecturers" color="#fbbf24" />
-                <QuickAction href="/timetable" icon={CalendarDays} label="Set Timetable" color="#22c55e" />
+                <QuickAction href="/u/lecturers" icon={Users} label="Upload Lecturers" color="#fbbf24" />
+                <QuickAction href="/u/timetable" icon={CalendarDays} label="Set Timetable" color="#22c55e" />
               </>
             )}
           </div>
